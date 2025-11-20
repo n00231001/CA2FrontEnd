@@ -1,6 +1,15 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import axios from "@/config/api";
 import { useParams } from 'react-router';
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 export default function Show() {
   const [festival, setFestival] = useState([]);
@@ -12,7 +21,7 @@ export default function Show() {
     const fetchFestival = async () => {
       const options = {
         method: "GET",
-        url: `https://festivals-api.vercel.app/festivals/${id}`,
+        url: `/festivals/${id}`,
         headers: {
             Authorization: `Bearer ${token}`
         }
@@ -30,5 +39,19 @@ export default function Show() {
     fetchFestival();
   }, []);
 
-  return <>Show festival</>;
+  return (
+    <Card className="w-full max-w-md">
+      <CardHeader>
+        <CardTitle>{festival.title}</CardTitle>
+        <CardDescription>
+          {festival.description}
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <img src={festival.image_path} alt={festival.title} />
+      </CardContent>
+      <CardFooter className="flex-col gap-2">
+      </CardFooter>
+    </Card>
+  );
 }

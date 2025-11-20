@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
-import { Link } from "react-router";
+import axios from "@/config/api";
+import { Link, useNavigate } from "react-router";
 import { Button } from "@/components/ui/button";
+import { Eye, Pencil } from "lucide-react";
+import DeleteBtn from "@/components/DeleteBtn";
 
 import {
   Table,
@@ -12,6 +14,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { toast } from "sonner";
 
 // import {
 //   Card,
@@ -26,11 +29,14 @@ import {
 export default function Index() {
   const [festivals, setFestivals] = useState([]);
 
+  const navigate = useNavigate();
+  
+
   useEffect(() => {
     const fetchFestivals = async () => {
       const options = {
         method: "GET",
-        url: "https://festivals-api.vercel.app/festivals",
+        url: "/festivals",
       };
 
       try {
@@ -45,29 +51,15 @@ export default function Index() {
     fetchFestivals();
   }, []);
 
-  // const festivalCards = festivals.map((festival) => {
-  //   return (
-  //     <Card key={festival.id}>
-  //       <CardHeader>
-  //         <CardTitle>{festival.title}</CardTitle>
-  //         <CardDescription>{festival.description}</CardDescription>
-  //         {/* <CardAction>Card Action</CardAction> */}
-  //       </CardHeader>
-  //       {/* <CardContent>
-  //         <p>Card Content</p>
-  //       </CardContent> */}
-  //       <CardFooter>
-  //         <Button
-  //           asChild
-  //           variant='outline'
-  //         ><Link size='md' to={`/festivals/${festival.id}`}>View</Link></Button>
-  //       </CardFooter>
-  //     </Card>
-  //   );
-  // });
+  const onDeleteCallback = (id) => {
+    toast.success("Festival deleted successfully");
+    setFestivals(festivals.filter(festival => festival.id !== id));
+  
+  };
 
   return (
     <>
+    
       <Button
         asChild
         variant='outline'
@@ -84,6 +76,7 @@ export default function Index() {
           <TableHead>City</TableHead>
           <TableHead>Start Date</TableHead>
           <TableHead>End Date</TableHead>
+          <TableHead></TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -93,6 +86,24 @@ export default function Index() {
             <TableCell>{festival.city}</TableCell>
             <TableCell>{festival.start_date}</TableCell>
             <TableCell>{festival.end_date}</TableCell>
+            <TableCell>
+              <div className="flex gap-2">
+              <Button 
+                className="cursor-pointer hover:border-blue-500"
+                variant="outline"
+                size="icon"
+                onClick={() => navigate(`/festivals/${festival.id}`)}
+              ><Eye /></Button>
+              <Button 
+                className="cursor-pointer hover:border-blue-500"
+                variant="outline"
+                size="icon"
+                onClick={() => navigate(`/festivals/${festival.id}/edit`)}
+              ><Pencil /></Button>
+              <DeleteBtn onDeleteCallback={onDeleteCallback} resource="festivals" id={festival.id} />
+              </div>
+
+            </TableCell>
           </TableRow>
         ))}
       </TableBody>

@@ -38,21 +38,6 @@ export default function App() {
     }
   };
 
-  // return (
-  //   <>
-  //     <Router>
-  //       <Navbar onLogin={onLogin} loggedIn={loggedIn} />
-  //       <Routes>
-  //         <Route path='/' element={<Home onLogin={onLogin} loggedIn={loggedIn} />} />
-
-  //         <Route path="/festivals" element={<FestivalsIndex />} />
-  //         <Route path="/festivals/:id" element={<FestivalsShow loggedIn={loggedIn} />} />
-
-  //       </Routes>
-  //     </Router>
-  //   </>
-  // )
-
   return (
     <Router>
       <SidebarProvider

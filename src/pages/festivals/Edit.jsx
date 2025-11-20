@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import axios from "axios";
+import axios from "@/config/api";
 import { useNavigate } from "react-router";
 import { useParams } from "react-router";
 
@@ -20,7 +20,7 @@ export default function Edit() {
     const fetchFestival = async () => {
       const options = {
         method: "GET",
-        url: `https://festivals-api.vercel.app/festivals/${id}`,
+        url: `/festivals/${id}`,
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -60,7 +60,7 @@ export default function Edit() {
 
     const options = {
       method: "PATCH",
-      url: `https://festivals-api.vercel.app/festivals/${id}`,
+      url: `/festivals/${id}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import axios from 'axios';
+import axios from "@/config/api";
 import { useNavigate } from 'react-router';
 
 export default function Create() {
@@ -26,7 +26,7 @@ export default function Create() {
 
         const options = {
             method: "POST",
-            url: `https://festivals-api.vercel.app/festivals`,
+            url: `/festivals`,
             headers: {
                 Authorization: `Bearer ${token}`
             },
@@ -36,7 +36,10 @@ export default function Create() {
         try {
             let response = await axios.request(options);
             console.log(response.data);
-            navigate('/festivals');
+            navigate('/festivals', { state: { 
+                type: 'success',
+                message: `Festival "${response.data.title}" created successfully` 
+            }});
         } catch (err) {
             console.log(err);
         }
