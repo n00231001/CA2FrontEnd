@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import axios from "@/config/api";
 import { useNavigate } from 'react-router';
+import { useAuth } from "@/hooks/useAuth";
 
 export default function Create() {
     const [form, setForm] = useState({
@@ -13,6 +14,7 @@ export default function Create() {
         end_date: ""
     });
     const navigate = useNavigate();
+    const { token } = useAuth();
 
     const handleChange = (e) => {
         setForm({
@@ -22,7 +24,6 @@ export default function Create() {
     };
 
     const createFestival = async () => {
-        const token = localStorage.getItem("token");
 
         const options = {
             method: "POST",

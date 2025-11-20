@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "@/config/api";
 import { useParams } from 'react-router';
+import { useAuth } from "@/hooks/useAuth";
 import {
   Card,
   CardAction,
@@ -14,8 +15,7 @@ import {
 export default function Show() {
   const [festival, setFestival] = useState([]);
   const { id } = useParams();
-
-  let token = localStorage.getItem('token');
+  const { token } = useAuth();
 
   useEffect(() => {
     const fetchFestival = async () => {

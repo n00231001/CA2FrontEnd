@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import axios from "@/config/api";
 import { useNavigate } from "react-router";
 import { useParams } from "react-router";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function Edit() {
   const [form, setForm] = useState({
@@ -14,7 +15,7 @@ export default function Edit() {
     end_date: "",
   });
 
-  const token = localStorage.getItem("token");
+  const { token } = useAuth();
 
   useEffect(() => {
     const fetchFestival = async () => {

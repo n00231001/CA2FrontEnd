@@ -1,4 +1,5 @@
 import { useState, useEffect} from 'react';
+import { AuthProvider } from './hooks/useAuth';
 
 import { BrowserRouter as Router, Routes, Route } from "react-router";
 
@@ -16,37 +17,17 @@ import FestivalsEdit from '@/pages/festivals/Edit';
 
 
 export default function App() {
-  const [loggedIn, setLoggedIn] = useState(false);
-
-  useEffect(() => {
-    let token = localStorage.getItem("token");
-
-    if(token){
-      setLoggedIn(true);
-    }
-
-  }, []);
-
-  const onLogin = (auth, token) => {
-    setLoggedIn(auth);
-
-    if(auth){
-      localStorage.setItem('token', token)
-    }
-    else {
-      localStorage.removeItem('token');
-    }
-  };
 
   return (
     <Router>
+      <AuthProvider>
       <SidebarProvider
         style={{
           "--sidebar-width": "calc(var(--spacing) * 72)",
           "--header-height": "calc(var(--spacing) * 12)",
         }}
       >
-        <AppSidebar variant="inset" loggedIn={loggedIn} onLogin={onLogin} />
+        <AppSidebar variant="inset" />
         <SidebarInset>
           <SiteHeader />
           {/* <Navbar onLogin={onLogin} loggedIn={loggedIn} /> */}
@@ -58,13 +39,13 @@ export default function App() {
                 <Routes>
                   <Route
                     path="/"
-                    element={<Home onLogin={onLogin} loggedIn={loggedIn} />}
+                    element={<Home />}
                   />
 
                   <Route path="/festivals" element={<FestivalsIndex />} />
                   <Route
                     path="/festivals/:id"
-                    element={<FestivalsShow loggedIn={loggedIn} />}
+                    element={<FestivalsShow />}
                   />
                   <Route
                     path="/festivals/:id/edit"
@@ -77,6 +58,7 @@ export default function App() {
           </div>
         </SidebarInset>
       </SidebarProvider>
+      </AuthProvider>
     </Router>
   );
 }
