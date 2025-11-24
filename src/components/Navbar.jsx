@@ -18,12 +18,12 @@ export default function Navbar() {
                     <NavigationMenuLink asChild><Link to=''>Home</Link></NavigationMenuLink>
                 </NavigationMenuItem>
                <NavigationMenuItem className="hidden md:block">
-                <NavigationMenuTrigger>Festivals</NavigationMenuTrigger>
+                <NavigationMenuTrigger>Doctors</NavigationMenuTrigger>
                     <NavigationMenuContent>
                         <ul className="grid w-[200px] gap-4">
                         <li>
                             <NavigationMenuLink asChild>
-                            <Link to='/festivals'>All</Link>
+                            <Link to='/doctors'>All</Link>
                             </NavigationMenuLink>
                             <NavigationMenuLink asChild>
                             <Link href="#">Create</Link>

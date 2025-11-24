@@ -13,15 +13,15 @@ import {
 } from "@/components/ui/card";
 
 export default function Show() {
-  const [festival, setFestival] = useState([]);
+  const [doctor, setDoctor] = useState([]);
   const { id } = useParams();
   const { token } = useAuth();
 
   useEffect(() => {
-    const fetchFestival = async () => {
+    const fetchDoctor = async () => {
       const options = {
         method: "GET",
-        url: `/festivals/${id}`,
+        url: `/doctors/${id}`,
         headers: {
             Authorization: `Bearer ${token}`
         }
@@ -30,25 +30,25 @@ export default function Show() {
       try {
         let response = await axios.request(options);
         console.log(response.data);
-        setFestival(response.data);
+        setDoctor(response.data);
       } catch (err) {
         console.log(err);
       }
     };
 
-    fetchFestival();
+    fetchDoctor();
   }, []);
 
   return (
     <Card className="w-full max-w-md">
       <CardHeader>
-        <CardTitle>{festival.title}</CardTitle>
+        <CardTitle>{doctor.title}</CardTitle>
         <CardDescription>
-          {festival.description}
+          {doctor.description}
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <img src={festival.image_path} alt={festival.title} />
+        <img src={doctor.image_path} alt={doctor.title} />
       </CardContent>
       <CardFooter className="flex-col gap-2">
       </CardFooter>

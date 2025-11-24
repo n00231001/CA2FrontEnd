@@ -23,11 +23,11 @@ export default function Create() {
         });
     };
 
-    const createFestival = async () => {
+    const createDoctor = async () => {
 
         const options = {
             method: "POST",
-            url: `/festivals`,
+            url: `/doctors`,
             headers: {
                 Authorization: `Bearer ${token}`
             },
@@ -37,9 +37,9 @@ export default function Create() {
         try {
             let response = await axios.request(options);
             console.log(response.data);
-            navigate('/festivals', { state: { 
+            navigate('/doctors', { state: { 
                 type: 'success',
-                message: `Festival "${response.data.title}" created successfully` 
+                message: `Doctor "${response.data.title}" created successfully` 
             }});
         } catch (err) {
             console.log(err);
@@ -50,12 +50,12 @@ export default function Create() {
     const handleSubmit = (e) => {
         e.preventDefault();
         console.log(form);
-        createFestival();
+        createDoctor();
     };
 
   return (
     <>
-        <h1>Create a new Festival</h1>
+        <h1>Create a new Doctor</h1>
         <form onSubmit={handleSubmit}>
             <Input 
                 type="text" 
