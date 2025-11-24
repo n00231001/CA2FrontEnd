@@ -7,3 +7,4 @@ Apply what you learn while developing this to your own CA2 Medical Clinic Applic
 
 1. `npm install`
 2. `npm run dev`
+# CA2FrontEnd
