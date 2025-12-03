@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useNavigate } from "react-router";
 import axios from "@/config/api";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -19,7 +18,6 @@ import { Label } from "@/components/ui/label";
 export default function LoginForm() {
   const [form, setForm] = useState({});
   const { onLogin } = useAuth();
-  const navigate = useNavigate();
 
   const handleForm = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -72,14 +70,6 @@ export default function LoginForm() {
       <CardFooter className="flex-col gap-2">
         <Button variant='outline' onClick={submitForm} type="submit" className="w-full">
           Login
-        </Button>
-        <Button
-          variant="ghost"
-          type="button"
-          className="w-full"
-          onClick={() => navigate("/register")}
-        >
-          Create an account
         </Button>
       </CardFooter>
     </Card>
