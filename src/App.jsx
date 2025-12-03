@@ -20,8 +20,8 @@ import PatientsShow from '@/pages/patients/Show';
 import PatientsCreate from '@/pages/patients/Create';
 import PatientsEdit from '@/pages/patients/Edit';
 
-// import AppointmentsIndex from '@/pages/appointment/Index';
-// import PatientsShow from '@/pages/patients/Show';
+import AppointmentsIndex from '@/pages/appointments/Index';
+import AppointmentsShow from '@/pages/appointments/Show';
 // import PatientsCreate from '@/pages/patients/Create';
 // import PatientsEdit from '@/pages/patients/Edit';
 
@@ -72,7 +72,12 @@ export default function App() {
                   <Route path="/patients/:id/edit" element={<PatientsEdit />} />
 
 // ----------------- Appointments Routes -----------------
-                
+                  <Route path="/appointments" element={<AppointmentsIndex />} />
+                  <Route
+                    path="/appointments/:id"
+                    element={<AppointmentsShow />}
+                  />
+
                 </Routes>
               </div>
             </div>

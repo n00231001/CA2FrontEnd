@@ -81,11 +81,9 @@ export default function Index() {
       <TableBody>
         {appointments.map((appointment) => (
           <TableRow key={appointment.id}>
-            <TableCell>{appointment.first_name} {appointment.last_name}</TableCell>
-            <TableCell>{appointment.email}</TableCell>
-            <TableCell>{appointment.phone}</TableCell>
-            <TableCell>{appointment.date_of_birth}</TableCell>
-            <TableCell>{appointment.address}</TableCell>
+            <TableCell>{appointment.appointment_date} {appointment.last_name}</TableCell>
+            <TableCell>{appointment.doctor_id}</TableCell>
+            <TableCell>{appointment.patient_id}</TableCell>
             <TableCell>{appointment.createdAt}</TableCell>
             <TableCell>{appointment.updatedAt}</TableCell>
             <TableCell>
