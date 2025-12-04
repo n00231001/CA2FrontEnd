@@ -25,11 +25,33 @@ export default function LoginForm() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const submitForm = (e) => {
+  const submitForm = async (e) => {
     e.preventDefault();
-    console.log(form);
-
-    onLogin(form.email, form.password);
+    try {
+      await onLogin(form.email, form.password);
+      navigate("/");
+    } catch (err) {
+      console.error("Login failed:", err);
+      // prefer err.message (thrown from useAuth), fall back to response body
+      const serverMsg =
+        err?.message ||
+        err?.response?.data?.message ||
+        err?.response?.data ||
+        JSON.stringify(err);
+      alert(`Login failed: ${serverMsg}`);
+      if (err?.response) {
+        console.log("Request payload sent:", {
+          email: form.email,
+          password: form.password,
+        });
+        console.log(
+          "Response status:",
+          err.response.status,
+          "data:",
+          err.response.data
+        );
+      }
+    }
   };
 
   return (
@@ -70,14 +92,19 @@ export default function LoginForm() {
         </form>
       </CardContent>
       <CardFooter className="flex-col gap-2">
-        <Button variant='outline' onClick={submitForm} type="submit" className="w-full">
+        <Button
+          variant="outline"
+          onClick={submitForm}
+          type="submit"
+          className="w-full"
+        >
           Login
         </Button>
         <Button
           variant="ghost"
           type="button"
           className="w-full"
-          onClick={() => navigate("/register")}
+          onClick={() => navigate("/registerForm")}
         >
           Create an account
         </Button>

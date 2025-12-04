@@ -6,16 +6,14 @@ import { useNavigate } from 'react-router';
 import { useAuth } from "@/hooks/useAuth";
 
 export default function Create() {
-    console.log("Create patient page loaded");
     const [form, setForm] = useState({
         first_name: "",
         last_name: "",
         email: "",
         phone: "",
-        date_of_birth: "",
-        address: "",
-        createdAt: "",
-        updatedAt: ""
+        specialisation: "",
+        // start_date: "",
+        // end_date: ""
     });
     const [submitting, setSubmitting] = useState(false);
     const navigate = useNavigate();
@@ -28,7 +26,7 @@ export default function Create() {
         });
     };
 
-    const createpatient = async () => {
+    const createDoctor = async () => {
         if (!token) {
             alert("Not authenticated. Please log in.");
             return;
@@ -42,7 +40,7 @@ export default function Create() {
 
         const options = {
             method: "POST",
-            url: `/patients`,
+            url: `/doctors`,
             headers: {
                 Authorization: `Bearer ${token}`,
                 "Content-Type": "application/json"
@@ -54,9 +52,9 @@ export default function Create() {
             setSubmitting(true);
             let response = await axios.request(options);
             console.log("Create success:", response.data);
-            navigate('/patients', { state: { 
+            navigate('/doctors', { state: { 
                 type: 'success',
-                message: `patient "${response.data.name || response.data.title || response.data.first_name || 'created'}" created successfully` 
+                message: `Doctor "${response.data.name || response.data.title || response.data.first_name || 'created'}" created successfully` 
             }});
         } catch (err) {
             console.error("Create error:", err);
@@ -89,12 +87,12 @@ export default function Create() {
             return;
         }
         console.log("Submitting payload:", { ...form, name: `${form.first_name} ${form.last_name}`.trim() });
-        createpatient();
+        createDoctor();
     };
 
   return (
     <>
-        <h1>Create a new patient</h1>
+        <h1>Create a new Doctor</h1>
         <form onSubmit={handleSubmit}>
             <Input 
                 type="text" 
@@ -130,35 +128,27 @@ export default function Create() {
             <Input 
                 className="mt-2"
                 type="text"
-                placeholder="Date of Birth"
-                name="date_of_birth"
-                value={form.date_of_birth}
+                placeholder="Specialisation"
+                name="specialisation"
+                value={form.specialisation}
                 onChange={handleChange}
+            />
+            {/* <Input 
+                className="mt-2"
+                type="text" 
+                placeholder="Start Date" 
+                name="start_date" 
+                value={form.start_date} 
+                onChange={handleChange} 
             />
             <Input 
                 className="mt-2"
-                type="text"
-                placeholder="Address"
-                name="address"
-                value={form.address}
-                onChange={handleChange}
-            />
-            <Input 
-                className="mt-2"
-                type="text"
-                placeholder="Created At"
-                name="createdAt"
-                value={form.createdAt}
-                onChange={handleChange}
-            />
-            <Input 
-                className="mt-2"
-                type="text"
-                placeholder="Updated At"
-                name="updatedAt"
-                value={form.updatedAt}
-                onChange={handleChange}
-            />
+                type="text" 
+                placeholder="End Date" 
+                name="end_date" 
+                value={form.end_date} 
+                onChange={handleChange} 
+            /> */}
             <Button 
                 className="mt-4 cursor-pointer" 
                 variant="outline" 

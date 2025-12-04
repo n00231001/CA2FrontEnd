@@ -1,25 +1,21 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import axios from "@/config/api";
+// use plain axios here so the app-level interceptor (that adds Authorization) is not applied
+import axios from "axios";
 import { useNavigate } from 'react-router';
-import { useAuth } from "@/hooks/useAuth";
 
 export default function Create() {
-    console.log("Create patient page loaded");
     const [form, setForm] = useState({
         first_name: "",
         last_name: "",
         email: "",
-        phone: "",
-        date_of_birth: "",
-        address: "",
-        createdAt: "",
-        updatedAt: ""
+        password: "",
+        created_at: "",
+        updated_at: ""
     });
     const [submitting, setSubmitting] = useState(false);
     const navigate = useNavigate();
-    const { token } = useAuth();
 
     const handleChange = (e) => {
         setForm({
@@ -28,42 +24,30 @@ export default function Create() {
         });
     };
 
-    const createpatient = async () => {
-        if (!token) {
-            alert("Not authenticated. Please log in.");
-            return;
-        }
-
-        // Some APIs expect a single "name" field — include it alongside other fields
+    const createuser = async () => {
         const payload = {
             ...form,
             name: `${form.first_name || ""} ${form.last_name || ""}`.trim()
         };
 
-        const options = {
-            method: "POST",
-            url: `/patients`,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json"
-            },
-            data: payload
-        };
-
         try {
             setSubmitting(true);
-            let response = await axios.request(options);
+            // send request without any Authorization header
+            const response = await axios.post(
+                "https://ca2-med-api.vercel.app/registerForm",
+                payload,
+                { headers: { "Content-Type": "application/json" } }
+            );
             console.log("Create success:", response.data);
-            navigate('/patients', { state: { 
+            navigate('/users', { state: { 
                 type: 'success',
-                message: `patient "${response.data.name || response.data.title || response.data.first_name || 'created'}" created successfully` 
+                message: `user "${response.data.name || response.data.title || response.data.first_name || 'created'}" created successfully` 
             }});
         } catch (err) {
             console.error("Create error:", err);
             if (err.response) {
                 console.error("Response status:", err.response.status);
                 console.error("Response data:", err.response.data);
-                // Show server-side validation details when available
                 if (err.response.status === 422) {
                     const serverData = err.response.data;
                     const details = serverData?.errors || serverData?.message || serverData;
@@ -78,23 +62,21 @@ export default function Create() {
         } finally {
             setSubmitting(false);
         }
-
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        // basic client-side validation to avoid obvious 422s
         if (!form.first_name.trim() || !form.last_name.trim() || !form.email.trim()) {
             alert("Please provide first name, last name and email.");
             return;
         }
         console.log("Submitting payload:", { ...form, name: `${form.first_name} ${form.last_name}`.trim() });
-        createpatient();
+        createuser();
     };
 
   return (
     <>
-        <h1>Create a new patient</h1>
+        <h1>Create a new user</h1>
         <form onSubmit={handleSubmit}>
             <Input 
                 type="text" 
@@ -121,42 +103,26 @@ export default function Create() {
             />
             <Input 
                 className="mt-2"
-                type="text"
-                placeholder="phone"
-                name="phone"
-                value={form.phone}
+                type="password"
+                placeholder="Password"
+                name="password"
+                value={form.password}
                 onChange={handleChange}
             />
             <Input 
                 className="mt-2"
                 type="text"
-                placeholder="Date of Birth"
-                name="date_of_birth"
-                value={form.date_of_birth}
+                placeholder="created at"
+                name="created_at"
+                value={form.created_at}
                 onChange={handleChange}
             />
             <Input 
                 className="mt-2"
                 type="text"
-                placeholder="Address"
-                name="address"
-                value={form.address}
-                onChange={handleChange}
-            />
-            <Input 
-                className="mt-2"
-                type="text"
-                placeholder="Created At"
-                name="createdAt"
-                value={form.createdAt}
-                onChange={handleChange}
-            />
-            <Input 
-                className="mt-2"
-                type="text"
-                placeholder="Updated At"
-                name="updatedAt"
-                value={form.updatedAt}
+                placeholder="updated at"
+                name="updated_at"
+                value={form.updated_at}
                 onChange={handleChange}
             />
             <Button 

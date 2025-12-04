@@ -139,7 +139,35 @@
   * {
     @apply border-border outline-ring/50;
   }
+  /* updated: add a subtle layered gradient background (dark & light aware) */
   body {
-    @apply bg-background text-foreground;
+    @apply text-foreground;
+    /* use current theme variable as a fallback background-color */
+    background-color: var(--background);
+    /* layered gradients on top of the base color for depth */
+    background-image:
+      radial-gradient(circle at 10% 20%, rgba(99,102,241,0.04), transparent 20%),
+      linear-gradient(135deg, rgba(99,102,241,0.06), rgba(168,85,247,0.04));
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+  }
+
+  /* dark theme override for a richer, darker gradient */
+  .dark body {
+    background-color: var(--background);
+    background-image:
+      radial-gradient(circle at 85% 15%, rgba(99,102,241,0.06), transparent 15%),
+      linear-gradient(135deg, rgba(2,6,23,0.85), rgba(17,24,39,0.8));
+  }
+
+  /* light preference override for a softer, lighter gradient */
+  @media (prefers-color-scheme: light) {
+    body {
+      background-color: var(--background);
+      background-image:
+        radial-gradient(circle at 10% 20%, rgba(99,102,241,0.06), transparent 20%),
+        linear-gradient(135deg, #f8fafc 0%, #eef2ff 100%);
+    }
   }
 }

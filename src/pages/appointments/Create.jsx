@@ -6,16 +6,13 @@ import { useNavigate } from 'react-router';
 import { useAuth } from "@/hooks/useAuth";
 
 export default function Create() {
-    console.log("Create patient page loaded");
     const [form, setForm] = useState({
-        first_name: "",
-        last_name: "",
-        email: "",
-        phone: "",
-        date_of_birth: "",
-        address: "",
-        createdAt: "",
-        updatedAt: ""
+        appointment_date: "",
+        doctor_id: "",
+        patient_id: "",
+        status: "",
+        // start_date: "",
+        // end_date: ""
     });
     const [submitting, setSubmitting] = useState(false);
     const navigate = useNavigate();
@@ -28,7 +25,7 @@ export default function Create() {
         });
     };
 
-    const createpatient = async () => {
+    const createappointment = async () => {
         if (!token) {
             alert("Not authenticated. Please log in.");
             return;
@@ -42,7 +39,7 @@ export default function Create() {
 
         const options = {
             method: "POST",
-            url: `/patients`,
+            url: `/appointments`,
             headers: {
                 Authorization: `Bearer ${token}`,
                 "Content-Type": "application/json"
@@ -54,9 +51,9 @@ export default function Create() {
             setSubmitting(true);
             let response = await axios.request(options);
             console.log("Create success:", response.data);
-            navigate('/patients', { state: { 
+            navigate('/appointments', { state: { 
                 type: 'success',
-                message: `patient "${response.data.name || response.data.title || response.data.first_name || 'created'}" created successfully` 
+                message: `appointment "${response.data.name || response.data.title || response.data.first_name || 'created'}" created successfully` 
             }});
         } catch (err) {
             console.error("Create error:", err);
@@ -89,76 +86,68 @@ export default function Create() {
             return;
         }
         console.log("Submitting payload:", { ...form, name: `${form.first_name} ${form.last_name}`.trim() });
-        createpatient();
+        createappointment();
     };
 
   return (
     <>
-        <h1>Create a new patient</h1>
+        <h1>Create a new appointment</h1>
         <form onSubmit={handleSubmit}>
             <Input 
                 type="text" 
-                placeholder="First Name" 
-                name="first_name" 
-                value={form.first_name} 
+                placeholder="Date" 
+                name="appointment_date" 
+                value={form.appointment_date} 
                 onChange={handleChange} 
             />
             <Input 
                 className="mt-2"
                 type="text" 
-                placeholder="Last Name" 
-                name="last_name" 
-                value={form.last_name} 
+                placeholder="Doctor ID" 
+                name="doctor_id" 
+                value={form.doctor_id} 
+                onChange={handleChange} 
+            />
+            <Input 
+                className="mt-2"
+                type="text"
+                placeholder="Patient ID"
+                name="patient_id"
+                value={form.patient_id}
+                onChange={handleChange}
+            />
+            <Input 
+                className="mt-2"
+                type="text"
+                placeholder="created at"
+                name="created_at"
+                value={form.created_at}
+                onChange={handleChange}
+            />
+            <Input 
+                className="mt-2"
+                type="text"
+                placeholder="updated at"
+                name="updated_at"
+                value={form.updated_at}
+                onChange={handleChange}
+            />
+            {/* <Input 
+                className="mt-2"
+                type="text" 
+                placeholder="Start Date" 
+                name="start_date" 
+                value={form.start_date} 
                 onChange={handleChange} 
             />
             <Input 
                 className="mt-2"
                 type="text" 
-                placeholder="Email" 
-                name="email" 
-                value={form.email} 
+                placeholder="End Date" 
+                name="end_date" 
+                value={form.end_date} 
                 onChange={handleChange} 
-            />
-            <Input 
-                className="mt-2"
-                type="text"
-                placeholder="phone"
-                name="phone"
-                value={form.phone}
-                onChange={handleChange}
-            />
-            <Input 
-                className="mt-2"
-                type="text"
-                placeholder="Date of Birth"
-                name="date_of_birth"
-                value={form.date_of_birth}
-                onChange={handleChange}
-            />
-            <Input 
-                className="mt-2"
-                type="text"
-                placeholder="Address"
-                name="address"
-                value={form.address}
-                onChange={handleChange}
-            />
-            <Input 
-                className="mt-2"
-                type="text"
-                placeholder="Created At"
-                name="createdAt"
-                value={form.createdAt}
-                onChange={handleChange}
-            />
-            <Input 
-                className="mt-2"
-                type="text"
-                placeholder="Updated At"
-                name="updatedAt"
-                value={form.updatedAt}
-                onChange={handleChange}
-            />
+            /> */}
             <Button 
                 className="mt-4 cursor-pointer" 
                 variant="outline" 
