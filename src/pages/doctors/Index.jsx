@@ -13,6 +13,12 @@ import {
   CardDescription,
   CardFooter,
 } from "@/components/ui/card";
+import {
+  Tooltip,
+  TooltipProvider,
+  TooltipTrigger,
+  TooltipContent,
+} from "@/components/ui/tooltip";
 
 import { toast } from "sonner";
 
@@ -91,10 +97,32 @@ export default function Index() {
               </CardHeader>
               <CardFooter className="flex justify-between gap-2 mt-4">
                 <div className="flex gap-2">
-                  <Button variant="outline" size="icon" onClick={() => navigate(`/doctors/${doctor.id}`)}><Eye /></Button>
-                  <Button variant="outline" size="icon" onClick={() => navigate(`/doctors/${doctor.id}/edit`)}><Pencil /></Button>
-                  <DeleteBtn onDeleteCallback={onDeleteCallback} resource="doctors" id={doctor.id} />
+                  <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger><Button variant="outline" size="icon" onClick={() => navigate(`/doctors/${doctor.id}`)}><Eye /></Button></TooltipTrigger>
+                    <TooltipContent>
+                      <p>View Doctor Details</p>
+                    </TooltipContent>
+                  </Tooltip>
+
+                  <Tooltip>
+                    <TooltipTrigger><Button variant="outline" size="icon" onClick={() => navigate(`/doctors/${doctor.id}/edit`)}><Pencil /></Button></TooltipTrigger>
+                    <TooltipContent>
+                      <p>Edit Doctor Details</p>
+                    </TooltipContent>
+                  </Tooltip>
+
+                  <Tooltip>
+                    <TooltipTrigger><DeleteBtn onDeleteCallback={onDeleteCallback} resource="doctors" id={doctor.id} /></TooltipTrigger>
+                    <TooltipContent>
+                      <p>Delete Doctor</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                  
+                  
                 </div>
+                
               </CardFooter>
             </Card>
           );
