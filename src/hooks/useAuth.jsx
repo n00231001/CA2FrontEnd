@@ -1,57 +1,60 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
 import axios from "@/config/api";
 
-const AuthContext = createContext(null);
+// Create Auth Context to store auth state
+const AuthContext = createContext();
 
-export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
+// Custom hook to use auth context
+export const useAuth = () => {
+    return useContext(AuthContext);
+};
 
-  const onLogin = async (email, password) => {
-    try {
-      console.log("Login payload:", { email, password });
-      const res = await axios.post("/login", { email, password }, {
-        headers: { "Content-Type": "application/json" }
-      });
-      console.log("Login response:", res.data);
+// Auth Provider component to wrap the app and provide auth state
+// children is a prop that represents the nested components
+export const AuthProvider = ({ children }) => {
+    const [token, setToken] = useState(() => {
+        if(localStorage.getItem('token')){
+            return localStorage.getItem('token');
+        }
+        else {
+            return null;
+        }
+    });
 
-      // adjust to the shape your API returns (token / access_token)
-      const token = res.data?.token || res.data?.access_token;
-      if (!token) {
-        throw new Error("Login response did not include a token");
-      }
+    const onLogin = async (email, password) => {
+        const options = {
+            method: "POST",
+            url: "/login",
+            data: {
+                email,
+                password
+            }
+        };
 
-      // persist token and set default header for axios instance
-      localStorage.setItem("token", token);
-      axios.defaults.headers.common = axios.defaults.headers.common || {};
-      axios.defaults.headers.common.Authorization = `Bearer ${token}`;
+        try {
+            let response = await axios.request(options);
+            console.log(response.data);
+            localStorage.setItem("token", response.data.token);
+            setToken(response.data.token);
 
-      // set user if present
-      setUser(res.data?.user || { email });
-      return res.data;
-    } catch (err) {
-      console.error("onLogin error:", err?.response?.status, err?.response?.data || err.message);
-      // normalize and throw a readable error message for callers
-      const serverMsg = err?.response?.data?.message
-        || err?.response?.data
-        || err?.message
-        || "Login failed";
-      throw new Error(typeof serverMsg === "string" ? serverMsg : JSON.stringify(serverMsg));
-    }
-  };
+        } catch (err) {
+            console.log(err.response);
 
-  const onLogout = () => {
-    localStorage.removeItem("token");
-    if (axios.defaults.headers.common) delete axios.defaults.headers.common.Authorization;
-    setUser(null);
-  };
+            return err.response.data;
+        }
+    };
 
-  return (
-    <AuthContext.Provider value={{ user, onLogin, onLogout }}>
-      {children}
-    </AuthContext.Provider>
-  );
-}
+    const onLogout = () => {
+        setToken(null);
+        localStorage.removeItem("token");
+    };
 
-export function useAuth() {
-  return useContext(AuthContext);
-}
+    const value = {
+        token,
+        onLogin,
+        onLogout
+    };
+
+    return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
+
+};

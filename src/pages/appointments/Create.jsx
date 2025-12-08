@@ -5,37 +5,67 @@ import axios from "@/config/api";
 import { useNavigate } from 'react-router';
 import { useAuth } from "@/hooks/useAuth";
 
+import * as React from "react";
+import { useForm, Controller } from "react-hook-form";
+import * as z from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+import { Calendar } from "@/components/ui/calendar"
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger
+} from "@/components/ui/popover"
+
 export default function Create() {
+    // Use plain JS initializers (no TypeScript generics in a .jsx file)
+    // and keep string defaults so inputs remain controlled.
     const [form, setForm] = useState({
         appointment_date: "",
         doctor_id: "",
         patient_id: "",
         status: "",
-        // start_date: "",
-        // end_date: ""
+        created_at: "",
+        updated_at: ""
     });
+    const [date, setDate] = React.useState(new Date())
     const [submitting, setSubmitting] = useState(false);
     const navigate = useNavigate();
     const { token } = useAuth();
+    // debug: show token value so you can confirm auth state
+    console.log('useAuth token:', token);
 
+    // If useAuth hasn't initialized yet it may return undefined — show a loading state
+    // if (token === undefined) {
+    //     return <div style={{ padding: 24 }}>Checking authentication...</div>;
+    // }
+
+    // If user is not authenticated, show a prompt and link to login instead of the form
+    // if (!token) {
+    //     return (
+    //         <div style={{ padding: 24 }}>
+    //             <h1>Create a new appointment</h1>
+    //             <p>You must be logged in to create appointments.</p>
+    //             <button onClick={() => navigate('/login')} style={{ textDecoration: 'underline', marginTop: 8 }}>
+    //                 Go to login
+    //             </button>
+    //         </div>
+    //     );
+    // }
+    
     const handleChange = (e) => {
         setForm({
             ...form,
             [e.target.name] : e.target.value
         });
     };
-
-    const createappointment = async () => {
+    
+    const createappointment = async (data) => {
+        // guard — redirect to login if token disappears
         if (!token) {
-            alert("Not authenticated. Please log in.");
+            navigate('/patients', { state: { from: '/appointments/create' } });
             return;
         }
-
-        // Some APIs expect a single "name" field — include it alongside other fields
-        const payload = {
-            ...form,
-            name: `${form.first_name || ""} ${form.last_name || ""}`.trim()
-        };
 
         const options = {
             method: "POST",
@@ -44,7 +74,7 @@ export default function Create() {
                 Authorization: `Bearer ${token}`,
                 "Content-Type": "application/json"
             },
-            data: payload
+            data: data
         };
 
         try {
@@ -60,7 +90,6 @@ export default function Create() {
             if (err.response) {
                 console.error("Response status:", err.response.status);
                 console.error("Response data:", err.response.data);
-                // Show server-side validation details when available
                 if (err.response.status === 422) {
                     const serverData = err.response.data;
                     const details = serverData?.errors || serverData?.message || serverData;
@@ -81,25 +110,64 @@ export default function Create() {
     const handleSubmit = (e) => {
         e.preventDefault();
         // basic client-side validation to avoid obvious 422s
-        if (!form.first_name.trim() || !form.last_name.trim() || !form.email.trim()) {
-            alert("Please provide first name, last name and email.");
+        if (!form.appointment_date.trim()) {
+            alert("Please provide appointment date.");
             return;
         }
-        console.log("Submitting payload:", { ...form, name: `${form.first_name} ${form.last_name}`.trim() });
-        createappointment();
+        const doctorId = Number(form.doctor_id);
+        const patientId = Number(form.patient_id);
+        if (!form.doctor_id.trim() || Number.isNaN(doctorId)) {
+            alert("Please provide a valid numeric Doctor ID.");
+            return;
+        }
+        if (!form.patient_id.trim() || Number.isNaN(patientId)) {
+            alert("Please provide a valid numeric Patient ID.");
+            return;
+        }
+
+        // stamp created_at and updated_at with current ISO timestamp
+        const now = new Date().toISOString();
+        const submitData = {
+            ...form,
+            doctor_id: doctorId,
+            patient_id: patientId,
+            created_at: now,
+            updated_at: now
+        };
+        console.log("Submitting payload:", submitData);
+        createappointment(submitData);
     };
 
   return (
     <>
         <h1>Create a new appointment</h1>
         <form onSubmit={handleSubmit}>
-            <Input 
-                type="text" 
-                placeholder="Date" 
-                name="appointment_date" 
-                value={form.appointment_date} 
-                onChange={handleChange} 
-            />
+            {/* Date picker as a dropdown popover */}
+            <Popover>
+              <PopoverTrigger asChild>
+                <Input
+                  type="text"
+                  placeholder="Select date"
+                  name="appointment_date"
+                  readOnly
+                  value={form.appointment_date}
+                />
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0">
+                <div style={{ padding: 8 }}>
+                  <Calendar
+                    mode="single"
+                    selected={date}
+                    onSelect={(d) => {
+                      setDate(d);
+                      const iso = d ? d.toISOString().slice(0, 10) : "";
+                      setForm({ ...form, appointment_date: iso });
+                    }}
+                    className="rounded-lg border"
+                  />
+                </div>
+              </PopoverContent>
+            </Popover>
             <Input 
                 className="mt-2"
                 type="text" 
@@ -116,7 +184,7 @@ export default function Create() {
                 value={form.patient_id}
                 onChange={handleChange}
             />
-            <Input 
+            {/* <Input 
                 className="mt-2"
                 type="text"
                 placeholder="created at"
@@ -131,7 +199,7 @@ export default function Create() {
                 name="updated_at"
                 value={form.updated_at}
                 onChange={handleChange}
-            />
+            /> */}
             {/* <Input 
                 className="mt-2"
                 type="text" 

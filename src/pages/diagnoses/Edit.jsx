@@ -8,11 +8,11 @@ import { useAuth } from "@/hooks/useAuth";
  
 export default function Edit() {
   const [form, setForm] = useState({
-    appointment_date: "",
-    last_name: "",
-    email: "",
-    phone: "",
-    specialisation: "",
+    patient_id: "",
+    condition: "",
+    diagnosis_date: "",
+    createdAt: "",
+    updatedAt: "",
   });
  
   const { token } = useAuth();
@@ -22,7 +22,7 @@ export default function Edit() {
     const fetchappointment = async () => {
       const options = {
         method: "GET",
-        url: `/appointments/${id}`,
+        url: `/diagnoses/${id}`,
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -34,11 +34,11 @@ export default function Edit() {
         console.log(appointment);
  
         setForm({
-          appointment_date: appointment.appointment_date,
-          last_name: appointment.last_name,
-          email: appointment.email,
-          phone: appointment.phone,
-          specialisation: appointment.specialisation,
+          patient_id: appointment.patient_id,
+          condition: appointment.condition,
+          diagnosis_date: appointment.diagnosis_date,
+          createdAt: appointment.createdAt,
+          updatedAt: appointment.updatedAt,
         });
  
       } catch (err) {
@@ -61,7 +61,7 @@ export default function Edit() {
   const updateappointment = async () => {
     const options = {
       method: "PATCH",
-      url: `/appointments/${id}`,
+      url: `/diagnoses/${id}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -71,7 +71,7 @@ export default function Edit() {
     try {
       let response = await axios.request(options);
       console.log(response.data);
-      navigate("/appointments");
+      navigate("/diagnoses");
     } catch (err) {
       console.log(err);
     }
@@ -88,41 +88,41 @@ export default function Edit() {
       <form onSubmit={handleSubmit}>
         <Input
           type="text"
-          placeholder="Appointment Date"
-          name="appointment_date"
-          value={form.appointment_date}
+          placeholder="Patirtent ID"
+          name="patient_id"
+          value={form.patient_id}
           onChange={handleChange}
         />
         <Input
           className="mt-2"
           type="text"
           placeholder="Last Name"
-          name="last_name"
-          value={form.last_name}
+          name="condition"
+          value={form.condition}
           onChange={handleChange}
         />
         <Input
           className="mt-2"
-          type="email"
-          placeholder="Email"
-          name="email"
-          value={form.email}
-          onChange={handleChange}
-        />
-        <Input
-          className="mt-2"
-          type="text"
-          placeholder="Phone"
-          name="phone"
-          value={form.phone}
+          type="diagnosis_date"
+          placeholder="diagnosis_date"
+          name="diagnosis_date"
+          value={form.diagnosis_date}
           onChange={handleChange}
         />
         <Input
           className="mt-2"
           type="text"
-          placeholder="Specialisation"
-          name="specialisation"
-          value={form.specialisation}
+          placeholder="createdAt"
+          name="createdAt"
+          value={form.createdAt}
+          onChange={handleChange}
+        />
+        <Input
+          className="mt-2"
+          type="text"
+          placeholder="updatedAt"
+          name="updatedAt"
+          value={form.updatedAt}
           onChange={handleChange}
         />
         <Button className="mt-4 cursor-pointer" variant="outline" type="submit">

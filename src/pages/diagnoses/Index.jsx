@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Eye, Pencil } from "lucide-react";
 import DeleteBtn from "@/components/DeleteBtn";
 
-
 import {
   Table,
   TableBody,
@@ -28,33 +27,33 @@ import { toast } from "sonner";
 // } from "@/components/ui/card";
 
 export default function Index() {
-  const [patients, setpatients] = useState([]);
+  const [diagnoses, setdiagnoses] = useState([]);
 
   const navigate = useNavigate();
   
 
   useEffect(() => {
-    const fetchpatients = async () => {
+    const fetchdiagnoses = async () => {
       const options = {
         method: "GET",
-        url: "/patients",
+        url: "/diagnoses",
       };
 
       try {
         let response = await axios.request(options);
         console.log(response.data);
-        setpatients(response.data);
+        setdiagnoses(response.data);
       } catch (err) {
         console.log(err);
       }
     };
 
-    fetchpatients();
+    fetchdiagnoses();
   }, []);
 
   const onDeleteCallback = (id) => {
-    toast.success("patient deleted successfully");
-    setpatients(patients.filter(patient => patient.id !== id));
+    toast.success("diagnosis deleted successfully");
+    setdiagnoses(diagnoses.filter(diagnosis => diagnosis.id !== id));
   
   };
 
@@ -65,46 +64,44 @@ export default function Index() {
         asChild
         variant='outline'
         className='mb-4 mr-auto block'
-      ><Link size='sm' to={`/patients/create`}>Create New patient</Link>
+      ><Link size='sm' to={`/diagnoses/create`}>Create New diagnosis</Link>
       </Button>
 
 
     <Table>
-      <TableCaption>A list of your recent patients.</TableCaption>
+      <TableCaption>A list of your recent diagnoses.</TableCaption>
       <TableHeader>
         <TableRow>
-          <TableHead>Name</TableHead>
-          <TableHead>Email</TableHead>
-          <TableHead>Phone</TableHead>
-          <TableHead></TableHead>
+          <TableHead>Patient ID</TableHead>
+          <TableHead>Condition</TableHead>
+          <TableHead>diagnosed with</TableHead>
+          <TableHead>created at</TableHead>
+          <TableHead>updated at</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
-        {patients.map((patient) => (
-          <TableRow key={patient.id}>
-            <TableCell>{patient.id}</TableCell>
-            <TableCell>{patient.first_name} {patient.last_name}</TableCell>
-            <TableCell>{patient.email}</TableCell>
-            <TableCell>{patient.phone}</TableCell>
-            <TableCell>{patient.date_of_birth}</TableCell>
-            <TableCell>{patient.address}</TableCell>
-            <TableCell>{patient.createdAt}</TableCell>
-            <TableCell>{patient.updatedAt}</TableCell>
+        {diagnoses.map((diagnosis) => (
+          <TableRow key={diagnosis.id}>
+            <TableCell>{diagnosis.patient_id}</TableCell>
+            <TableCell>{diagnosis.condition}</TableCell>
+            <TableCell>{diagnosis.diagnosed_with}</TableCell>
+            <TableCell>{diagnosis.created_at}</TableCell>
+            <TableCell>{diagnosis.updated_at}</TableCell>
             <TableCell>
               <div className="flex gap-2">
               <Button 
                 className="cursor-pointer hover:border-blue-500"
                 variant="outline"
                 size="icon"
-                onClick={() => navigate(`/patients/${patient.id}`)}
+                onClick={() => navigate(`/diagnoses/${diagnosis.id}`)}
               ><Eye /></Button>
               <Button 
                 className="cursor-pointer hover:border-blue-500"
                 variant="outline"
                 size="icon"
-                onClick={() => navigate(`/patients/${patient.id}/edit`)}
+                onClick={() => navigate(`/diagnoses/${diagnosis.id}/edit`)}
               ><Pencil /></Button>
-              <DeleteBtn onDeleteCallback={onDeleteCallback} resource="patients" id={patient.id} />
+              <DeleteBtn onDeleteCallback={onDeleteCallback} resource="diagnoses" id={diagnosis.id} />
               </div>
 
             </TableCell>
