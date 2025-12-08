@@ -25,19 +25,19 @@ export default function Create() {
     };
 
     const createuser = async () => {
-        const payload = {
-            ...form,
-            name: `${form.first_name || ""} ${form.last_name || ""}`.trim()
-        };
-
         try {
             setSubmitting(true);
-            // send request without any Authorization header
-            const response = await axios.post(
-                "https://ca2-med-api.vercel.app/registerForm",
-                payload,
-                { headers: { "Content-Type": "application/json" } }
+            // use a fresh axios instance so any global interceptors (that add Authorization) are not used
+            const client = axios.create({
+              baseURL: "https://ca2-med-api.vercel.app",
+              headers: { "Content-Type": "application/json" }
+            });
+
+            const response = await client.post(
+                "/registerForm",
+                { ...form, name: `${form.first_name || ""} ${form.last_name || ""}`.trim() }
             );
+
             console.log("Create success:", response.data);
             navigate('/users', { state: { 
                 type: 'success',
@@ -52,6 +52,9 @@ export default function Create() {
                     const serverData = err.response.data;
                     const details = serverData?.errors || serverData?.message || serverData;
                     alert(`Validation failed: ${JSON.stringify(details)}`);
+                } else if (err.response.status === 401 || /authorization/i.test(String(err.response.data))) {
+                    // helpful message if server still requires auth
+                    alert("Create failed: the server requires authorization for this endpoint. Contact the API owner or use the public registration endpoint.");
                 } else {
                     const msg = err.response.data?.message || JSON.stringify(err.response.data);
                     alert(`Create failed: ${msg}`);

@@ -94,7 +94,8 @@ export default function App() {
                   />
                   <Route path="/diagnoses/create" element={<DiagnosesCreate />} />
                   <Route path="/diagnoses/:id/edit" element={<DiagnosesEdit />} />
-
+// ----------------- Register Route -----------------
+                  <Route path="/registerForm" element={<RegisterForm />} />
                 </Routes>
               </div>
             </div>
