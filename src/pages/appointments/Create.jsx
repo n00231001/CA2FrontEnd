@@ -17,6 +17,9 @@ import {
     PopoverTrigger
 } from "@/components/ui/popover"
 
+// toast for user feedback
+import { toast } from "sonner";
+
 export default function Create() {
     // Use plain JS initializers (no TypeScript generics in a .jsx file)
     // and keep string defaults so inputs remain controlled.
@@ -34,24 +37,14 @@ export default function Create() {
     const { token } = useAuth();
     // debug: show token value so you can confirm auth state
     console.log('useAuth token:', token);
-
-    // If useAuth hasn't initialized yet it may return undefined — show a loading state
-    // if (token === undefined) {
-    //     return <div style={{ padding: 24 }}>Checking authentication...</div>;
-    // }
-
-    // If user is not authenticated, show a prompt and link to login instead of the form
-    // if (!token) {
-    //     return (
-    //         <div style={{ padding: 24 }}>
-    //             <h1>Create a new appointment</h1>
-    //             <p>You must be logged in to create appointments.</p>
-    //             <button onClick={() => navigate('/login')} style={{ textDecoration: 'underline', marginTop: 8 }}>
-    //                 Go to login
-    //             </button>
-    //         </div>
-    //     );
-    // }
+    
+    // show a single toast error when auth is known and user is not authenticated
+    React.useEffect(() => {
+        if (token === undefined) return; // still initializing
+        if (!token) {
+            toast.error("You must be logged in to create appointments");
+        }
+    }, [token]);
     
     const handleChange = (e) => {
         setForm({
@@ -63,6 +56,8 @@ export default function Create() {
     const createappointment = async (data) => {
         // guard — redirect to login if token disappears
         if (!token) {
+            console.error("No token found");
+            toast.error("Please log in to create an appointment");
             navigate('/patients', { state: { from: '/appointments/create' } });
             return;
         }

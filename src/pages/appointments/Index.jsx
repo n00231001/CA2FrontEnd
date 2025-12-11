@@ -65,6 +65,8 @@ export default function Index() {
             <TableHead>Date</TableHead>
             <TableHead>Doctor</TableHead>
             <TableHead>Patient</TableHead>
+            <TableHead>Created At</TableHead>
+            <TableHead>Updated At</TableHead>
             <TableHead></TableHead>
           </TableRow>
         </TableHeader>

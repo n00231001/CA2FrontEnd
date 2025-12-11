@@ -5,6 +5,7 @@ import axios from "@/config/api";
 import { useNavigate } from "react-router";
 import { useParams } from "react-router";
 import { useAuth } from "@/hooks/useAuth";
+import { toast } from "sonner";
  
 export default function Edit() {
   const [form, setForm] = useState({
@@ -27,6 +28,12 @@ export default function Edit() {
           Authorization: `Bearer ${token}`,
         },
       };
+      if (!token) {
+            console.error("No token found");
+            toast.error("Please log in to create a doctor");
+            navigate('/doctors', { state: { from: '/doctors/create' } });
+            return;
+        }
  
       try {
         let response = await axios.request(options);
@@ -67,7 +74,6 @@ export default function Edit() {
       },
       data: form,
     };
- 
     try {
       let response = await axios.request(options);
       console.log(response.data);
