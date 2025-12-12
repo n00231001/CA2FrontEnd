@@ -7,16 +7,64 @@ import { useParams } from "react-router";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
  
+import { useForm, Controller } from "react-hook-form";
+import * as z from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+import {
+  Field,
+  FieldDescription,
+  FieldLabel,
+  FieldError,
+} from "@/components/ui/field";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+
+const formSchema = z.object({
+  first_name: z.string().min(1, "First name is required"),
+  last_name: z.string().min(1, "Last name is required"),
+  email: z.string().min(1, "Email is required"),
+  phone: z.string().min(1, "Phone number is required"),
+  specialisation: z.enum([
+    "Podiatrist",
+    "Dermatologist",
+    "Pediatrician",
+    "Psychiatrist",
+    "General Practitioner",
+  ]),
+});
+
 export default function Edit() {
-  const [form, setForm] = useState({
-    first_name: "",
-    last_name: "",
-    email: "",
-    phone: "",
-    specialisation: "",
-  });
- 
-  const { token } = useAuth();
+  const navigate = useNavigate();
+    const { token } = useAuth();
+  
+    // react-hook-form methods (rename to avoid colliding with local form state)
+    const rhf = useForm({
+      resolver: zodResolver(formSchema),
+      defaultValues: {
+        first_name: "",
+        last_name: "",
+        email: "",
+        phone: "",
+        specialisation: "",
+      },
+      mode: "onChange",
+    });
+    // local controlled form state used by inputs & submit
+    const [form, setForm] = useState({
+      first_name: "",
+      last_name: "",
+      email: "",
+      phone: "",
+      specialisation: "",
+    });
+    console.log("useAuth token:", token);
   const { id } = useParams();
  
   useEffect(() => {
@@ -55,8 +103,6 @@ export default function Edit() {
  
     fetchDoctor();
   }, []);
- 
-  const navigate = useNavigate();
  
   const handleChange = (e) => {
     setForm({
@@ -123,14 +169,36 @@ export default function Edit() {
           value={form.phone}
           onChange={handleChange}
         />
-        <Input
-          className="mt-2"
-          type="text"
-          placeholder="Specialisation"
-          name="specialisation"
-          value={form.specialisation}
-          onChange={handleChange}
-        />
+        <Controller
+                      name="specialisation"
+                      control={rhf.control}
+                       render={({ field, fieldState }) => (
+                        <Field data-invalid={fieldState.invalid}>
+                          <FieldLabel>Specialisation</FieldLabel>
+                          <Select
+                            name={field.name}
+                            onValueChange={field.onChange}
+                            value={field.value}
+                          >
+                            <SelectTrigger aria-invalid={fieldState.invalid}>
+                              <SelectValue placeholder="Choose specialisation" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="Podiatrist">Podiatrist</SelectItem>
+                              <SelectItem value="Dermatologist">Dermatologist</SelectItem>
+                              <SelectItem value="Pediatrician">Pediatrician</SelectItem>
+                              <SelectItem value="Psychiatrist">Psychiatrist</SelectItem>
+                              <SelectItem value="General Practitioner">
+                                General Practitioner
+                              </SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FieldDescription>
+                            Select your specialisation
+                          </FieldDescription>
+                        </Field>
+                      )}
+                    />
         <Button className="mt-4 cursor-pointer" variant="outline" type="submit">
           Submit
         </Button>
