@@ -20,45 +20,51 @@ import {
 // toast for user feedback
 import { toast } from "sonner";
 
+const formSchema = z.object({
+  date_of_birth: z.string().min(1, "Date of birth is required"),
+  first_name: z.string().min(1, "First name is required"),
+  last_name: z.string().min(1, "Last name is required"),
+  email: z.string().email("Invalid email address"),
+  phone: z.string().min(1, "Phone number is required"),
+  address: z.string().min(1, "Address is required"),
+});
+
 export default function Create() {
-    // Use plain JS initializers (no TypeScript generics in a .jsx file)
-    // and keep string defaults so inputs remain controlled.
-    const [form, setForm] = useState({
-        date_of_birth: "",
-        first_name: "",
-        last_name: "",
-        email: "",
-        phone: "",
-        address: "", // added required field so request matches Zod schema
-        
+    const {
+        control,
+        handleSubmit,
+        watch,
+        formState: { errors, isSubmitting },
+        setValue,
+    } = useForm({
+        resolver: zodResolver(formSchema),
+        defaultValues: {
+            date_of_birth: "",
+            first_name: "",
+            last_name: "",
+            email: "",
+            phone: "",
+            address: "",
+        },
     });
+
     const [date, setDate] = React.useState(new Date())
-    const [submitting, setSubmitting] = useState(false);
     const navigate = useNavigate();
     const { token } = useAuth();
-    // debug: show token value so you can confirm auth state
+    
     console.log('useAuth token:', token);
     
-    // show a single toast error when auth is known and user is not authenticated
     React.useEffect(() => {
-        if (token === undefined) return; // still initializing
+        if (token === undefined) return;
         if (!token) {
-            toast.error("You must be logged in to create appointments");
+            toast.error("You must be logged in to create a patient");
         }
     }, [token]);
     
-    const handleChange = (e) => {
-        setForm({
-            ...form,
-            [e.target.name] : e.target.value
-        });
-    };
-    
-    const createappointment = async (data) => {
-        // guard — redirect to login if token disappears
+    const createPatient = async (data) => {
         if (!token) {
             console.error("No token found");
-            toast.error("Please log in to create an appointment");
+            toast.error("Please log in to create a patient");
             navigate('/patients', { state: { from: '/patients/create' } });
             return;
         }
@@ -74,7 +80,6 @@ export default function Create() {
         };
 
         try {
-            setSubmitting(true);
             let response = await axios.request(options);
             console.log("Create success:", response.data);
             navigate('/patients', { state: { 
@@ -89,63 +94,42 @@ export default function Create() {
                 if (err.response.status === 422) {
                     const serverData = err.response.data;
                     const details = serverData?.errors || serverData?.message || serverData;
-                    alert(`Validation failed: ${JSON.stringify(details)}`);
+                    toast.error(`Validation failed: ${JSON.stringify(details)}`);
                 } else {
                     const msg = err.response.data?.message || JSON.stringify(err.response.data);
-                    alert(`Create failed: ${msg}`);
+                    toast.error(`Create failed: ${msg}`);
                 }
             } else {
-                alert("Network error or no response from server.");
+                toast.error("Network error or no response from server.");
             }
-        } finally {
-            setSubmitting(false);
         }
-
     };
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        // basic client-side validation for patient create
-        if (!form.first_name?.trim()) {
-            alert("Please provide first name.");
-            return;
-        }
-        if (!form.last_name?.trim()) {
-            alert("Please provide last name.");
-            return;
-        }
-        if (!form.email?.trim()) {
-            alert("Please provide email.");
-            return;
-        }
-        if (!form.phone?.trim()) {
-            alert("Please provide phone.");
-            return;
-        }
-        // stamp created_at and updated_at with current ISO timestamp
+    const onSubmit = (data) => {
+        console.log("Submitting payload:", data);
         const now = new Date().toISOString();
         const submitData = {
-            ...form,
+            ...data,
             created_at: now,
             updated_at: now
         };
-        console.log("Submitting payload:", submitData);
-        createappointment(submitData);
+        createPatient(submitData);
     };
 
   return (
     <>
         <h1>Create a new patient</h1>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit(onSubmit)}>
             {/* Date picker as a dropdown popover */}
             <Popover>
               <PopoverTrigger asChild>
                 <Input
                   type="text"
                   placeholder="Select date of birth"
-                  name="date_of_birth"
                   readOnly
-                  value={form.date_of_birth}
+                  value={watch('date_of_birth')}
+                  aria-invalid={errors.date_of_birth ? "true" : "false"}
+                  className={errors.date_of_birth ? "border-red-500" : ""}
                 />
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0">
@@ -156,60 +140,118 @@ export default function Create() {
                     onSelect={(d) => {
                       setDate(d);
                       const iso = d ? d.toISOString().slice(0, 10) : "";
-                      setForm(prev => ({ ...prev, date_of_birth: iso }));
+                      setValue('date_of_birth', iso);
                     }}
                     className="rounded-lg border"
                   />
                 </div>
               </PopoverContent>
             </Popover>
-            <Input 
-                className="mt-2"
-                type="text"
-                placeholder="First name"
+            {errors.date_of_birth && (
+                <p className="text-sm text-red-500 mt-1">{errors.date_of_birth.message}</p>
+            )}
+
+            <Controller
                 name="first_name"
-                value={form.first_name}
-                onChange={handleChange}
+                control={control}
+                render={({ field }) => (
+                    <>
+                        <Input 
+                            className={`mt-2 ${errors.first_name ? "border-red-500" : ""}`}
+                            type="text"
+                            placeholder="First name"
+                            {...field}
+                            aria-invalid={errors.first_name ? "true" : "false"}
+                        />
+                        {errors.first_name && (
+                            <p className="text-sm text-red-500 mt-1">{errors.first_name.message}</p>
+                        )}
+                    </>
+                )}
             />
-            <Input 
-                className="mt-2"
-                type="text"
-                placeholder="Last name"
+
+            <Controller
                 name="last_name"
-                value={form.last_name}
-                onChange={handleChange}
+                control={control}
+                render={({ field }) => (
+                    <>
+                        <Input 
+                            className={`mt-2 ${errors.last_name ? "border-red-500" : ""}`}
+                            type="text"
+                            placeholder="Last name"
+                            {...field}
+                            aria-invalid={errors.last_name ? "true" : "false"}
+                        />
+                        {errors.last_name && (
+                            <p className="text-sm text-red-500 mt-1">{errors.last_name.message}</p>
+                        )}
+                    </>
+                )}
             />
-            <Input 
-                className="mt-2"
-                type="text"
-                placeholder="Email"
+
+            <Controller
                 name="email"
-                value={form.email}
-                onChange={handleChange}
+                control={control}
+                render={({ field }) => (
+                    <>
+                        <Input 
+                            className={`mt-2 ${errors.email ? "border-red-500" : ""}`}
+                            type="email"
+                            placeholder="Email"
+                            {...field}
+                            aria-invalid={errors.email ? "true" : "false"}
+                        />
+                        {errors.email && (
+                            <p className="text-sm text-red-500 mt-1">{errors.email.message}</p>
+                        )}
+                    </>
+                )}
             />
-            <Input 
-                className="mt-2"
-                type="text"
-                placeholder="Phone"
+
+            <Controller
                 name="phone"
-                value={form.phone}
-                onChange={handleChange}
+                control={control}
+                render={({ field }) => (
+                    <>
+                        <Input 
+                            className={`mt-2 ${errors.phone ? "border-red-500" : ""}`}
+                            type="text"
+                            placeholder="Phone"
+                            {...field}
+                            aria-invalid={errors.phone ? "true" : "false"}
+                        />
+                        {errors.phone && (
+                            <p className="text-sm text-red-500 mt-1">{errors.phone.message}</p>
+                        )}
+                    </>
+                )}
             />
-            <Input 
-                className="mt-2"
-                type="text"
-                placeholder="Address"
+
+            <Controller
                 name="address"
-                value={form.address}
-                onChange={handleChange}
+                control={control}
+                render={({ field }) => (
+                    <>
+                        <Input 
+                            className={`mt-2 ${errors.address ? "border-red-500" : ""}`}
+                            type="text"
+                            placeholder="Address"
+                            {...field}
+                            aria-invalid={errors.address ? "true" : "false"}
+                        />
+                        {errors.address && (
+                            <p className="text-sm text-red-500 mt-1">{errors.address.message}</p>
+                        )}
+                    </>
+                )}
             />
             
             <Button 
                 className="mt-4 cursor-pointer" 
                 variant="outline" 
                 type="submit"
-                disabled={submitting}
-            >{submitting ? "Submitting..." : "Submit"}</Button>
+                disabled={isSubmitting}
+            >{isSubmitting ? "Submitting..." : "Submit"}</Button>
         </form>
     </>
   );

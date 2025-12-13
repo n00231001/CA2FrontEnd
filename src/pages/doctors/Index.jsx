@@ -4,7 +4,6 @@ import { Link, useNavigate } from "react-router";
 import { Button } from "@/components/ui/button";
 import { Eye, Pencil } from "lucide-react";
 import DeleteBtn from "@/components/DeleteBtn";
-import { useParams } from "react-router";
 
 import {
   Card,
@@ -24,12 +23,11 @@ import { toast } from "sonner";
 
 export default function Index() {
   const [doctors, setDoctors] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
-  const { id } = useParams();
   
   // simple set of 5 colors for the avatar
   const COLORS = ['#EF4444', '#F59E0B', '#10B981', '#3B82F6', '#8B5CF6'];
-  // no single avatarColor here — compute per-doctor below
 
   useEffect(() => {
     const fetchDoctors = async () => {
@@ -50,14 +48,33 @@ export default function Index() {
     fetchDoctors();
   }, []);
 
+  const filteredDoctors = doctors.filter((doctor) => {
+    const term = searchTerm.toLowerCase();
+
+    return (
+      doctor.first_name?.toLowerCase().includes(term) ||
+      doctor.last_name?.toLowerCase().includes(term) ||
+      doctor.email?.toLowerCase().includes(term) ||
+      doctor.specialization?.toLowerCase().includes(term)
+    );
+  });
+
   const onDeleteCallback = (id) => {
     toast.success("Doctor deleted successfully");
     setDoctors(doctors.filter(doctor => doctor.id !== id));
-  
   };
 
   return (
     <>
+      <div className="flex items-center gap-4 mb-4">
+        <input
+          type="text"
+          placeholder="Search doctors..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="w-full max-w-sm rounded-md border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+        />
+      </div>
       <div className="flex items-center justify-between mb-4">
         <Button
           asChild
@@ -70,8 +87,8 @@ export default function Index() {
 
       {/* Cards grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {doctors.length === 0 && <p>No doctors available.</p>}
-        {doctors.map((doctor) => {
+        {filteredDoctors.length === 0 && <p>No doctors available.</p>}
+        {filteredDoctors.map((doctor) => {
           const idx = Number(doctor.id) || 0;
           const avatarColor = COLORS[Math.abs(idx) % COLORS.length];
           const initials = (doctor.first_name || "").split(" ").map(n => n[0]).join("").slice(0,3).toUpperCase();
@@ -98,31 +115,34 @@ export default function Index() {
               <CardFooter className="flex justify-between gap-2 mt-4">
                 <div className="flex gap-2">
                   <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger><Button variant="outline" size="icon" onClick={() => navigate(`/doctors/${doctor.id}`)}><Eye /></Button></TooltipTrigger>
-                    <TooltipContent>
-                      <p>View Doctor Details</p>
-                    </TooltipContent>
-                  </Tooltip>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button variant="outline" size="icon" onClick={() => navigate(`/doctors/${doctor.id}`)}><Eye /></Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>View Doctor Details</p>
+                      </TooltipContent>
+                    </Tooltip>
 
-                  <Tooltip>
-                    <TooltipTrigger><Button variant="outline" size="icon" onClick={() => navigate(`/doctors/${doctor.id}/edit`)}><Pencil /></Button></TooltipTrigger>
-                    <TooltipContent>
-                      <p>Edit Doctor Details</p>
-                    </TooltipContent>
-                  </Tooltip>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button variant="outline" size="icon" onClick={() => navigate(`/doctors/${doctor.id}/edit`)}><Pencil /></Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Edit Doctor Details</p>
+                      </TooltipContent>
+                    </Tooltip>
 
-                  <Tooltip>
-                    <TooltipTrigger><DeleteBtn onDeleteCallback={onDeleteCallback} resource="doctors" id={doctor.id} /></TooltipTrigger>
-                    <TooltipContent>
-                      <p>Delete Doctor</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-                  
-                  
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <DeleteBtn onDeleteCallback={onDeleteCallback} resource="doctors" id={doctor.id} />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Delete Doctor</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                 </div>
-                
               </CardFooter>
             </Card>
           );
