@@ -1,108 +1,91 @@
-import { useState, useEffect} from 'react';
-import { AuthProvider } from './hooks/useAuth';
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import axios from "@/config/api";
+import { useNavigate } from 'react-router';
 
-import { BrowserRouter as Router, Routes, Route } from "react-router";
+export default function Signup() {
+  const [form, setForm] = useState({
+    first_name: "",
+    last_name: "",
+    email: "",
+    password: ""
+  });
+  const [submitting, setSubmitting] = useState(false);
+  const navigate = useNavigate();
 
-import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
-import { AppSidebar } from '@/components/app-sidebar';
-import { SiteHeader } from '@/components/site-header';
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
 
-import Navbar from '@/components/Navbar';
-import Home from '@/pages/Home';
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-import DoctorsIndex from '@/pages/doctors/Index';
-import DoctorsShow from '@/pages/doctors/Show';
-import DoctorsCreate from '@/pages/doctors/Create';
-import DoctorsEdit from '@/pages/doctors/Edit';
+    if (!form.email || !form.password) {
+      alert("Email and password are required");
+      return;
+    }
 
-import PatientsIndex from '@/pages/patients/Index';
-import PatientsShow from '@/pages/patients/Show';
-import PatientsCreate from '@/pages/patients/Create';
-import PatientsEdit from '@/pages/patients/Edit';
+    try {
+      setSubmitting(true);
 
-import AppointmentsIndex from '@/pages/appointments/Index';
-import AppointmentsShow from '@/pages/appointments/Show';
-import AppointmentsCreate from '@/pages/appointments/Create';
-import AppointmentsEdit from '@/pages/appointments/Edit';
+      await axios.post("/register", form);
 
-import DiagnosesIndex from '@/pages/Diagnoses/Index';
-import DiagnosesShow from '@/pages/Diagnoses/Show';
-import DiagnosesCreate from '@/pages/Diagnoses/Create';
-import DiagnosesEdit from '@/pages/Diagnoses/Edit';
-
-import RegisterForm from '@/components/registerForm';
-
-export default function App() {
+      navigate("/login", {
+        state: {
+          type: "success",
+          message: "Account created successfully. Please log in."
+        }
+      });
+    } catch (err) {
+      alert(
+        err.response
+          ? err.response.data.message || "Signup failed"
+          : err.message
+      );
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   return (
-    <Router>
-      <AuthProvider>
-      <SidebarProvider
-        style={{
-          "--sidebar-width": "calc(var(--spacing) * 72)",
-          "--header-height": "calc(var(--spacing) * 12)",
-        }}
-      >
-        <AppSidebar variant="inset" />
-        <SidebarInset>
-          <SiteHeader />
-          {/* <Navbar onLogin={onLogin} loggedIn={loggedIn} /> */}
+    <>
+      <h1>Create an account</h1>
 
-          <div className="flex flex-1 flex-col">
-            <div className="@container/main flex flex-1 flex-col gap-2">
-              <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6 mx-6">
-                {/* Main content */}
-                <Routes>
-                  <Route
-                    path="/"
-                    element={<Home />}
-                  />
+      <form onSubmit={handleSubmit} className="space-y-2">
+        <Input
+          name="first_name"
+          placeholder="First Name (optional)"
+          value={form.first_name}
+          onChange={handleChange}
+        />
 
-                  <Route path="/doctors" element={<DoctorsIndex />} />
-                  <Route
-                    path="/doctors/:id"
-                    element={<DoctorsShow />}
-                  />
-                  <Route
-                    path="/doctors/:id/edit"
-                    element={<DoctorsEdit />}
-                  />
-                  <Route path="/doctors/create" element={<DoctorsCreate />} />
+        <Input
+          name="last_name"
+          placeholder="Last Name (optional)"
+          value={form.last_name}
+          onChange={handleChange}
+        />
 
-// ----------------- Patients Routes -----------------
-                  <Route path="/patients" element={<PatientsIndex />} />
-                  <Route
-                    path="/patients/:id"
-                    element={<PatientsShow />}
-                  />
-                  <Route path="/patients/create" element={<PatientsCreate />} />
-                  <Route path="/patients/:id/edit" element={<PatientsEdit />} />
+        <Input
+          name="email"
+          placeholder="Email"
+          value={form.email}
+          onChange={handleChange}
+        />
 
-// ----------------- Appointments Routes -----------------
-                  <Route path="/appointments" element={<AppointmentsIndex />} />
-                  <Route
-                    path="/appointments/:id"
-                    element={<AppointmentsShow />}
-                  />
-                  <Route path="/appointments/create" element={<AppointmentsCreate />} />
-                  <Route path="/appointments/:id/edit" element={<AppointmentsEdit />} />
-// ----------------- Diagnoses Routes -----------------
-                  <Route path="/diagnoses" element={<DiagnosesIndex />} />
-                  <Route
-                    path="/diagnoses/:id"
-                    element={<DiagnosesShow />}
-                  />
-                  <Route path="/diagnoses/create" element={<DiagnosesCreate />} />
-                  <Route path="/diagnoses/:id/edit" element={<DiagnosesEdit />} />
-// ----------------- Register Route -----------------
-                  <Route path="/registerForm" element={<RegisterForm />} />
-                </Routes>
-              </div>
-            </div>
-          </div>
-        </SidebarInset>
-      </SidebarProvider>
-      </AuthProvider>
-    </Router>
+        <Input
+          type="password"
+          name="password"
+          placeholder="Password"
+          value={form.password}
+          onChange={handleChange}
+        />
+
+        <Button disabled={submitting}>
+          {submitting ? "Creating account..." : "Sign Up"}
+        </Button>
+      </form>
+    </>
   );
 }

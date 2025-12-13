@@ -22,6 +22,7 @@ import {
 import { toast } from "sonner";
 
 export default function Index() {
+  const [filter, setFilter] = useState("all");
   const [doctors, setDoctors] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
@@ -50,13 +51,17 @@ export default function Index() {
 
   const filteredDoctors = doctors.filter((doctor) => {
     const term = searchTerm.toLowerCase();
+    const spec = (doctor.specialisation || doctor.specialization || "").toLowerCase();
 
-    return (
+    const matchesSearch =
       doctor.first_name?.toLowerCase().includes(term) ||
       doctor.last_name?.toLowerCase().includes(term) ||
       doctor.email?.toLowerCase().includes(term) ||
-      doctor.specialization?.toLowerCase().includes(term)
-    );
+      spec.includes(term);
+
+    const matchesFilter = filter === "all" || spec === filter;
+
+    return matchesSearch && matchesFilter;
   });
 
   const onDeleteCallback = (id) => {
@@ -84,6 +89,19 @@ export default function Index() {
           <Link size='sm' to={`/doctors/create`}>Create New Doctor</Link>
         </Button>
       </div>
+      {/* filter buttons */}
+      <div className="flex flex-wrap gap-2 mb-4">
+        {["all", "podiatrist", "dermatologist", "pediatrician", "psychiatrist", "general practitioner"].map((item) => (
+          <Button
+            key={item}
+            variant={filter === item ? "default" : "outline"}
+            size="sm"
+            onClick={() => setFilter(item)}
+          >
+            {item.charAt(0).toUpperCase() + item.slice(1)}
+          </Button>
+        ))}
+      </div>
 
       {/* Cards grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -104,12 +122,13 @@ export default function Index() {
                   </div>
                   <div>
                     <CardTitle>{doctor.first_name} {doctor.last_name}</CardTitle>
-                    <CardDescription>{doctor.specialization || "No specialization"}</CardDescription>
+                    <CardDescription>{doctor.specialisation || doctor.specialization || "No specialization"}</CardDescription>
                   </div>
                 </div>
                 <div className="mt-3">
                   <p className="text-sm text-muted-foreground">Email: {doctor.email}</p>
                   <p className="text-sm text-muted-foreground">Phone: {doctor.phone}</p>
+                  <p className="text-sm text-muted-foreground">specialisation: {doctor.specialisation}</p>
                 </div>
               </CardHeader>
               <CardFooter className="flex justify-between gap-2 mt-4">

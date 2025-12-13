@@ -104,7 +104,7 @@ export default function LoginForm() {
           variant="ghost"
           type="button"
           className="w-full"
-          onClick={() => navigate("/registerForm")}
+          onClick={() => navigate("/register")}
         >
           Create an account
         </Button>
