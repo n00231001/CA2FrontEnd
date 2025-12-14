@@ -6,11 +6,15 @@ import {
   IconMicrophone2,
   IconInnerShadowTop,
   IconMusic,
+  IconMoon,
+  IconSun,
 } from "@tabler/icons-react";
 import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
 import { useLocation } from "react-router";
 import { useEffect } from "react";
+import { useTheme } from "next-themes";
+import { Button } from "@/components/ui/button";
 
 import { NavMain } from "@/components/nav-main";
 import { NavUser } from "@/components/nav-user";
@@ -61,6 +65,7 @@ const data = {
 
 export function AppSidebar({ ...props }) {
   const location = useLocation();
+  const { theme, setTheme } = useTheme();
 
   console.log(location);
 
@@ -96,6 +101,16 @@ export function AppSidebar({ ...props }) {
                   <span className="text-base font-semibold">Acme Inc.</span>
                 </a>
               </SidebarMenuButton>
+            </SidebarMenuItem>
+            <SidebarMenuItem>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                className="ml-auto"
+              >
+                {theme === 'dark' ? <IconSun className="size-5" /> : <IconMoon className="size-5" />}
+              </Button>
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarHeader>
