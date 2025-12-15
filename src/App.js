@@ -6,8 +6,8 @@ function App() {
     <div className="App" style={{ position: 'relative', minHeight: '100vh', overflow: 'hidden' }}>
       {/* Waves as full-screen background (inline styles ensure it fills parent) */}
       <Waves
-        lineColor="#fff"
-        backgroundColor="#071028" // ← make background dark so white lines show
+        lineColor="#000000ff"
+        backgroundColor="#efeff0ff" // ← make background dark so white lines show
         waveSpeedX={0.02}
         waveSpeedY={0.01}
         waveAmpX={40}

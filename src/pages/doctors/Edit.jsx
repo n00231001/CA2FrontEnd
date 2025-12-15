@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import axios from "@/config/api";
 import { useNavigate } from "react-router";
 import { useParams } from "react-router";
@@ -105,10 +106,12 @@ export default function Edit() {
   }, []);
  
   const handleChange = (e) => {
+    const { name, value } = e.target;
     setForm({
       ...form,
-      [e.target.name]: e.target.value,
+      [name]: value,
     });
+    rhf.setValue(name, value, { shouldValidate: true });
   };
  
   const updateDoctor = async () => {
@@ -123,9 +126,16 @@ export default function Edit() {
     try {
       let response = await axios.request(options);
       console.log(response.data);
-      navigate("/doctors");
+      toast.success("Doctor successfully edited");
+      navigate("/doctors", {
+        state: {
+          type: "success",
+          message: "Doctor successfully edited",
+        },
+      });
     } catch (err) {
       console.log(err);
+      toast.error("Failed to update doctor");
     }
   };
  
@@ -135,74 +145,105 @@ export default function Edit() {
   };
  
   return (
-    <>
-      <h1>Update Doctor</h1>
-      <form onSubmit={handleSubmit}>
-        <Input
-          type="text"
-          placeholder="First Name"
-          name="first_name"
-          value={form.first_name}
-          onChange={handleChange}
-        />
-        <Input
-          className="mt-2"
-          type="text"
-          placeholder="Last Name"
-          name="last_name"
-          value={form.last_name}
-          onChange={handleChange}
-        />
-        <Input
-          className="mt-2"
-          type="email"
-          placeholder="Email"
-          name="email"
-          value={form.email}
-          onChange={handleChange}
-        />
-        <Input
-          className="mt-2"
-          type="text"
-          placeholder="Phone"
-          name="phone"
-          value={form.phone}
-          onChange={handleChange}
-        />
-        <Controller
-                      name="specialisation"
-                      control={rhf.control}
-                       render={({ field, fieldState }) => (
-                        <Field data-invalid={fieldState.invalid}>
-                          <FieldLabel>Specialisation</FieldLabel>
-                          <Select
-                            name={field.name}
-                            onValueChange={field.onChange}
-                            value={field.value}
-                          >
-                            <SelectTrigger aria-invalid={fieldState.invalid}>
-                              <SelectValue placeholder="Choose specialisation" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="Podiatrist">Podiatrist</SelectItem>
-                              <SelectItem value="Dermatologist">Dermatologist</SelectItem>
-                              <SelectItem value="Pediatrician">Pediatrician</SelectItem>
-                              <SelectItem value="Psychiatrist">Psychiatrist</SelectItem>
-                              <SelectItem value="General Practitioner">
-                                General Practitioner
-                              </SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FieldDescription>
-                            Select your specialisation
-                          </FieldDescription>
-                        </Field>
-                      )}
-                    />
-        <Button className="mt-4 cursor-pointer" variant="outline" type="submit">
-          Submit
-        </Button>
-      </form>
-    </>
+    <div className="mx-auto max-w-2xl bg-black p-1 rounded-lg shadow-md">
+      <Card className="shadow-lg">
+        <CardHeader>
+          <CardTitle className="text-2xl">Update Doctor</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <Input
+                type="text"
+                placeholder="First Name"
+                name="first_name"
+                value={form.first_name}
+                onChange={handleChange}
+              />
+              {rhf.formState.errors.first_name && (
+                <p className="text-xs text-red-500 mt-1">
+                  {rhf.formState.errors.first_name.message}
+                </p>
+              )}
+            </div>
+            <div>
+              <Input
+                type="text"
+                placeholder="Last Name"
+                name="last_name"
+                value={form.last_name}
+                onChange={handleChange}
+              />
+              {rhf.formState.errors.last_name && (
+                <p className="text-xs text-red-500 mt-1">
+                  {rhf.formState.errors.last_name.message}
+                </p>
+              )}
+            </div>
+            <div>
+              <Input
+                type="email"
+                placeholder="Email"
+                name="email"
+                value={form.email}
+                onChange={handleChange}
+              />
+              {rhf.formState.errors.email && (
+                <p className="text-xs text-red-500 mt-1">
+                  {rhf.formState.errors.email.message}
+                </p>
+              )}
+            </div>
+            <div>
+              <Input
+                type="text"
+                placeholder="Phone"
+                name="phone"
+                value={form.phone}
+                onChange={handleChange}
+              />
+              {rhf.formState.errors.phone && (
+                <p className="text-xs text-red-500 mt-1">
+                  {rhf.formState.errors.phone.message}
+                </p>
+              )}
+            </div>
+            <Controller
+              name="specialisation"
+              control={rhf.control}
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid}>
+                  <FieldLabel>Specialisation</FieldLabel>
+                  <Select
+                    name={field.name}
+                    onValueChange={field.onChange}
+                    value={field.value}
+                  >
+                    <SelectTrigger aria-invalid={fieldState.invalid}>
+                      <SelectValue placeholder="Choose specialisation" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Podiatrist">Podiatrist</SelectItem>
+                      <SelectItem value="Dermatologist">Dermatologist</SelectItem>
+                      <SelectItem value="Pediatrician">Pediatrician</SelectItem>
+                      <SelectItem value="Psychiatrist">Psychiatrist</SelectItem>
+                      <SelectItem value="General Practitioner">
+                        General Practitioner
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FieldDescription>
+                    Select your specialisation
+                  </FieldDescription>
+                </Field>
+              )}
+            />
+            <Button className="w-full cursor-pointer" variant="default" type="submit">
+              Update Doctor
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
+    </div>
   );
 }

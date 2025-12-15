@@ -2,27 +2,40 @@ import { Outlet } from 'react-router'
 import { AppSidebar } from '@/components/app-sidebar'
 import { SiteHeader } from '@/components/site-header'
 import { SidebarProvider } from '@/components/ui/sidebar'
-import LightPillar from '@/components/LightPillar'
+import Waves from '@/components/Waves'
+import { useTheme } from 'next-themes'
+import { useEffect, useState } from 'react'
 
 // Root layout: sidebar + header with routed content area
 export default function AppLayout() {
+  const { theme, systemTheme } = useTheme()
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  const currentTheme = theme === 'system' ? systemTheme : theme
+  const isLight = mounted && currentTheme === 'light'
+
   return (
     <SidebarProvider>
       <div className="flex min-h-screen w-full bg-background">
-        {/* LightPillar background behind everything except sidebar */}
+        {/* Waves background behind everything except sidebar */}
         <div className="pointer-events-none fixed inset-0 z-0" style={{ width: '100%', height: '100%' }}>
-          <LightPillar
-            topColor="#a7a6aaff"
-            bottomColor="#ccccccff"
-            intensity={1.0}
-            rotationSpeed={0.3}
-            glowAmount={0.002}
-            pillarWidth={3.0}
-            pillarHeight={4}
-            noiseIntensity={0}
-            pillarRotation={200}
-            interactive={true}
-            mixBlendMode="darken"
+          <Waves
+            lineColor={isLight ? '#000000' : '#64748b'}
+            backgroundColor={isLight ? '#ffffff' : 'transparent'}
+            waveSpeedX={0.02}
+            waveSpeedY={0.01}
+            waveAmpX={40}
+            waveAmpY={22}
+            friction={0.9}
+            tension={0.01}
+            maxCursorMove={120}
+            xGap={12}
+            yGap={36}
+            style={{ width: '100%', height: '100%' }}
           />
         </div>
         

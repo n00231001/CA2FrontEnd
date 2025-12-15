@@ -139,6 +139,7 @@ export default function Edit() {
         
         <Button className="mt-4 cursor-pointer" variant="outline" type="submit">
           Submit
+          message: "Account created successfully. Please log in."
         </Button>
       </form>
     </>
