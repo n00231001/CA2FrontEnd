@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import axios from "@/config/api";
 import { useNavigate } from 'react-router';
 import { useAuth } from "@/hooks/useAuth";
@@ -117,8 +118,12 @@ export default function Create() {
     };
 
   return (
-    <>
-        <h1>Create a new patient</h1>
+    <div className="flex items-center justify-center min-h-screen p-4">
+      <Card className="w-full max-w-md">
+        <CardHeader>
+          <CardTitle>Create a new patient</CardTitle>
+        </CardHeader>
+        <CardContent>
         <form onSubmit={handleSubmit(onSubmit)}>
             {/* Date picker as a dropdown popover */}
             <Popover>
@@ -162,10 +167,10 @@ export default function Create() {
                             placeholder="First name"
                             {...field}
                             aria-invalid={errors.first_name ? "true" : "false"}
-                        />
-                        {errors.first_name && (
+                        />{errors.first_name && (
                             <p className="text-sm text-red-500 mt-1">{errors.first_name.message}</p>
                         )}
+                        
                     </>
                 )}
             />
@@ -247,12 +252,13 @@ export default function Create() {
             />
             
             <Button 
-                className="mt-4 cursor-pointer" 
-                variant="outline" 
+                className="w-full mt-4 cursor-pointer" 
                 type="submit"
                 disabled={isSubmitting}
             >{isSubmitting ? "Submitting..." : "Submit"}</Button>
         </form>
-    </>
+        </CardContent>
+      </Card>
+    </div>
   );
 }

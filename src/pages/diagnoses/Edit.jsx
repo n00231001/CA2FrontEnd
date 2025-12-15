@@ -5,7 +5,17 @@ import axios from "@/config/api";
 import { useNavigate } from "react-router";
 import { useParams } from "react-router";
 import { useAuth } from "@/hooks/useAuth";
+import { Field, FieldLabel, FieldDescription } from '@/components/ui/field';
+import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from '@/components/ui/select';
  
+const CONDITION_OPTIONS = [
+  'Hypertension',
+  'Diabetes',
+  'Asthma',
+  'Allergy',
+  'Infection'
+];
+
 export default function Edit() {
   const [form, setForm] = useState({
     patient_id: "",
@@ -93,14 +103,20 @@ export default function Edit() {
           value={form.patient_id}
           onChange={handleChange}
         />
-        <Input
-          className="mt-2"
-          type="text"
-          placeholder="Last Name"
-          name="condition"
-          value={form.condition}
-          onChange={handleChange}
-        />
+        <Field>
+          <FieldLabel>Condition</FieldLabel>
+          <Select value={form.condition} onValueChange={(val) => setForm({ ...form, condition: val })}>
+            <SelectTrigger>
+              <SelectValue placeholder="Choose condition" />
+            </SelectTrigger>
+            <SelectContent>
+              {CONDITION_OPTIONS.map((opt) => (
+                <SelectItem key={opt} value={opt}>{opt}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <FieldDescription>Select the patient condition</FieldDescription>
+        </Field>
         <Input
           className="mt-2"
           type="diagnosis_date"

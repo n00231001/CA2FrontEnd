@@ -1,4 +1,5 @@
 import { useAuth } from "@/hooks/useAuth";
+import { useNavigate } from "react-router";
 
 import {
   IconCreditCard,
@@ -32,6 +33,7 @@ import {
 export function NavUser({ user }) {
   const { isMobile } = useSidebar()
   const { onLogout } = useAuth();
+  const navigate = useNavigate();
 
   return (
     <SidebarMenu>
@@ -75,7 +77,15 @@ export function NavUser({ user }) {
             </DropdownMenuLabel>
         
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => onLogout()}>
+            <DropdownMenuItem
+              onClick={async () => {
+                try {
+                  await onLogout();
+                } finally {
+                  navigate('/');
+                }
+              }}
+            >
               <IconLogout />
               Log out
             </DropdownMenuItem>
