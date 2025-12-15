@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import axios from "@/config/api";
 import { useNavigate } from "react-router";
 import { useAuth } from "@/hooks/useAuth";
@@ -84,9 +85,13 @@ export default function Create() {
   };
 
   return (
-    <>
-      <h1>Create a new appointment</h1>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4 max-w-sm">
+    <div className="mx-auto max-w-2xl">
+      <Card className="shadow-lg">
+        <CardHeader>
+          <CardTitle className="text-2xl">Create Doctor</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4">
 
         <div className="flex flex-col gap-1">
           <label className="text-sm font-medium">First Name</label>
@@ -175,10 +180,12 @@ export default function Create() {
               )}
             />
        
-        <Button className="mt-4 cursor-pointer" variant="outline" type="submit">
-          Submit
-        </Button>
-      </form>
-    </>
+            <Button className="w-full cursor-pointer" variant="default" type="submit">
+              Create Doctor
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
+    </div>
   );
 }
