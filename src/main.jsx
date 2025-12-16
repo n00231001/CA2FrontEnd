@@ -5,6 +5,7 @@ import '@/assets/globals.css'
 import AppLayout from '@/App.jsx'
 import Home from '@/pages/Home.jsx'
 import Signup from '@/pages/Signup.jsx'
+import Login from '@/pages/Login.jsx'
 import AppointmentsIndex from '@/pages/appointments/Index.jsx'
 import AppointmentsCreate from '@/pages/appointments/Create.jsx'
 import AppointmentsShow from '@/pages/appointments/Show.jsx'
@@ -61,7 +62,8 @@ const router = createBrowserRouter([
     ],
   },
   { path: '/signup', element: <Signup /> },
-  { path: '/register', element: <RegisterCreate /> },
+  { path: '/login', element: <Login /> },
+  { path: '/register', element: <Signup /> },
   { path: '*', element: <NotFound /> },
 ])
 

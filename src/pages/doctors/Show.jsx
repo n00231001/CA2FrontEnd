@@ -45,10 +45,9 @@ export default function Show() {
     };
 
     fetchDoctor();
-  }, []);
+  }, [id, token]);
 
   return (
-    console.log("you are in doctor show page"),
     <Card className="w-full max-w-md">
       <CardHeader>
         <CardTitle>Dr. {doctor.first_name} {doctor.last_name}</CardTitle>

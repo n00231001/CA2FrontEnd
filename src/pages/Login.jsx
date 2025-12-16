@@ -2,18 +2,17 @@ import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import axios from '@/config/api'
-import { useNavigate } from 'react-router'
-import { Link } from 'react-router'
+import { useNavigate, Link } from 'react-router'
+import { useAuth } from '@/hooks/useAuth'
 
-export default function Signup() {
+export default function Login() {
   const [form, setForm] = useState({
-    first_name: '',
-    last_name: '',
     email: '',
     password: '',
   })
   const [submitting, setSubmitting] = useState(false)
   const navigate = useNavigate()
+  const { login } = useAuth()
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value })
@@ -30,16 +29,15 @@ export default function Signup() {
     try {
       setSubmitting(true)
 
-      await axios.post('/register', form)
+      const response = await axios.post('/login', form)
+      const { token } = response.data
 
-      navigate('/', {
-        state: {
-          type: 'success',
-          message: 'Account created successfully. Please log in.',
-        },
-      })
+      if (token) {
+        login(token)
+        navigate('/')
+      }
     } catch (err) {
-      console.error('Signup error:', err.response?.data)
+      console.error('Login error:', err.response?.data)
       if (err.response?.data?.error?.issues) {
         err.response.data.error.issues.forEach(issue => {
           console.error(`${issue.path.join('.')}: ${issue.message}`)
@@ -47,7 +45,7 @@ export default function Signup() {
       }
       alert(
         err.response
-          ? err.response.data.message || 'Signup failed'
+          ? err.response.data.message || 'Login failed'
           : err.message,
       )
     } finally {
@@ -57,25 +55,9 @@ export default function Signup() {
 
   return (
     <>
-      <h1>Create an account</h1>
+      <h1>Log In</h1>
 
       <form onSubmit={handleSubmit} className="space-y-2">
-        <Input
-          name="first_name"
-          placeholder="First Name"
-          type="text"
-          value={form.first_name}
-          onChange={handleChange}
-        />
-
-        <Input
-          name="last_name"
-          placeholder="Last Name"
-          type="text"
-          value={form.last_name}
-          onChange={handleChange}
-        />
-
         <Input
           name="email"
           type="email"
@@ -93,11 +75,11 @@ export default function Signup() {
         />
 
         <Button disabled={submitting}>
-          {submitting ? 'Creating account...' : 'Sign Up'}
+          {submitting ? 'Logging in...' : 'Log In'}
         </Button>
 
         <p className="text-sm">
-          Already have an account? <Link to="/dashboard" className="text-blue-500 hover:underline">Log in</Link>
+          Don't have an account? <Link to="/signup" className="text-blue-500 hover:underline">Sign up</Link>
         </p>
       </form>
     </>
