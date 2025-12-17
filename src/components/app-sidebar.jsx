@@ -6,6 +6,7 @@ import {
   IconMicrophone2,
   IconInnerShadowTop,
   IconMusic,
+  IconFileText,
   IconMoon,
   IconSun,
 } from "@tabler/icons-react";
@@ -49,6 +50,11 @@ const data = {
       title: "Patients",
       url: "/patients",
       icon: IconTheater,
+    },
+    {
+      title: "prescriptions",
+      url: "/prescriptions",
+      icon: IconFileText,
     },
     {
       title: "Appointments",

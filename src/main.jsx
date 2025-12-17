@@ -24,6 +24,11 @@ import DiagnosesIndex from '@/pages/diagnoses/Index.jsx'
 import DiagnosesCreate from '@/pages/diagnoses/Create.jsx'
 import DiagnosesShow from '@/pages/diagnoses/Show.jsx'
 import DiagnosesEdit from '@/pages/diagnoses/Edit.jsx'
+import PrescriptionsIndex from '@/pages/prescriptions/index.jsx'
+import PrescriptionsCreate from '@/pages/prescriptions/Create.jsx'
+import PrescriptionsShow from '@/pages/prescriptions/Show.jsx'
+import PrescriptionsEdit from '@/pages/prescriptions/Edit.jsx'
+//
 import RegisterCreate from '@/pages/register/create.jsx'
 import { AuthProvider } from '@/hooks/useAuth.jsx'
 import { ThemeProvider } from 'next-themes'
@@ -59,6 +64,10 @@ const router = createBrowserRouter([
       { path: 'diagnoses/create', element: <DiagnosesCreate /> },
       { path: 'diagnoses/:id', element: <DiagnosesShow /> },
       { path: 'diagnoses/:id/edit', element: <DiagnosesEdit /> },
+      { path: 'prescriptions/create', element: <PrescriptionsCreate /> },
+      { path: 'prescriptions', element: <PrescriptionsIndex /> },
+      { path: 'prescriptions/:id', element: <PrescriptionsShow /> },
+      { path: 'prescriptions/:id/edit', element: <PrescriptionsEdit /> },
     ],
   },
   { path: '/signup', element: <Signup /> },

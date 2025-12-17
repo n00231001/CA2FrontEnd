@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/card";
 
 export default function Show() {
-  const [patient, setpatient] = useState([]);
+  const [prescription, setprescription] = useState([]);
   const { id } = useParams();
   const { token } = useAuth();
 
@@ -26,10 +26,10 @@ export default function Show() {
   })();
 
   useEffect(() => {
-    const fetchpatient = async () => {
+    const fetchprescription = async () => {
       const options = {
         method: "GET",
-        url: `/patients/${id}`,
+        url: `/prescriptions/${id}`,
         headers: {
             Authorization: `Bearer ${token}`
         }
@@ -38,32 +38,32 @@ export default function Show() {
       try {
         let response = await axios.request(options);
         console.log(response.data);
-        setpatient(response.data);
+        setprescription(response.data);
       } catch (err) {
         console.log(err);
       }
     };
 
-    fetchpatient();
+    fetchprescription();
   }, [id, token]);
 
   return (
     <Card className="w-full max-w-md">
       <CardHeader>
-        <CardTitle>Dr. {patient.first_name} {patient.last_name}</CardTitle>
+        <CardTitle>Dr. {prescription.first_name} {prescription.last_name}</CardTitle>
         <div
           className="w-24 h-24 rounded-full flex items-center justify-center text-3xl font-bold"
           style={{ backgroundColor: avatarColor, color: '#fff' }}
         >
-          {patient.first_name?.split(" ").map(n => n[0]).join("")}
+          {prescription.first_name?.split(" ").map(n => n[0]).join("")}
         </div>
         <CardDescription>
-          <h1>patient Details:</h1>
-          <p>Name: {patient.first_name} {patient.last_name}</p>
-          <p>Email: {patient.email}</p>
-          <p>Phone: {patient.phone}</p>
-          <p>Created At: {patient.created_at}</p>
-          <p>Updated At: {patient.updated_at}</p>
+          <h1>prescription Details:</h1>
+          <p>Email: {prescription.email}</p>
+          <p>Specialization: {prescription.specialization}</p>
+          <p>Phone: {prescription.phone}</p>
+          <p>Created At: {prescription.created_at}</p>
+          <p>Updated At: {prescription.updated_at}</p>
         </CardDescription>
       </CardHeader>
       <CardFooter className="flex-col gap-2">
@@ -71,4 +71,3 @@ export default function Show() {
     </Card>
   );
 }
-

@@ -143,29 +143,13 @@ export default function Create() {
                             )}
                         </div>
 
-                        <Controller
-                            name="diagnosed_with"
-                            control={control}
-                            render={({ field, fieldState }) => (
-                                <Field data-invalid={fieldState.invalid}>
-                                    <FieldLabel>Diagnosed With</FieldLabel>
-                                    <Select name={field.name} onValueChange={field.onChange} value={field.value}>
-                                        <SelectTrigger aria-invalid={fieldState.invalid}>
-                                            <SelectValue placeholder="Choose diagnosis type" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {DIAGNOSED_OPTIONS.map((opt) => (
-                                                <SelectItem key={opt} value={opt}>{opt}</SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                    <FieldDescription>Select the diagnosis type</FieldDescription>
-                                    {errors.diagnosed_with && (
-                                        <p className="mt-1 text-sm text-red-500">{errors.diagnosed_with.message}</p>
-                                    )}
-                                </Field>
+                        <div>
+                            <Input placeholder="Condition" {...register('condition')} />
+                            {errors.condition && (
+                                <p className="mt-1 text-sm text-red-500">{errors.condition.message}</p>
                             )}
-                        />
+                        </div>
+                        
 
                         <CardFooter className="px-0">
                             <Button type="submit" variant="outline" className="w-full" disabled={submitting}>
